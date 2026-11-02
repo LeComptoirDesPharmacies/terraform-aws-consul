@@ -1,11 +1,5 @@
 #!/bin/bash
-# This script can be used to install Consul and its dependencies. This script has been tested with the following
-# operating systems:
-#
-# 1. Ubuntu 16.04
-# 1. Ubuntu 18.04
-# 1. Ubuntu 20.04
-# 1. Amazon Linux 2
+# This script can be used to install Consul and its dependencies. This script only supports Amazon Linux 2023.
 
 set -e
 
@@ -22,7 +16,7 @@ function print_usage {
   echo
   echo "Usage: install-consul [OPTIONS]"
   echo
-  echo "This script can be used to install Consul and its dependencies. This script has been tested with Ubuntu 16.04/18.04/20.04 and Amazon Linux 2."
+  echo "This script can be used to install Consul and its dependencies. This script only supports Amazon Linux 2023."
   echo
   echo "Options:"
   echo
@@ -109,27 +103,20 @@ function retry {
   exit $exit_status
 }
 
-function has_yum {
-  [ -n "$(command -v yum)" ]
-}
-
-function has_apt_get {
-  [ -n "$(command -v apt-get)" ]
+function assert_amazon_linux_2023 {
+  if ! grep -q '^ID="amzn"$' /etc/os-release 2>/dev/null || ! grep -q '^VERSION_ID="2023"$' /etc/os-release 2>/dev/null; then
+    log_error "This script only supports Amazon Linux 2023."
+    exit 1
+  fi
 }
 
 function install_dependencies {
   log_info "Installing dependencies"
 
-  if has_apt_get; then
-    sudo apt-get update -y
-    sudo apt-get install -y awscli curl unzip jq
-  elif has_yum; then
-    sudo yum update -y
-    sudo yum install -y aws curl unzip jq
-  else
-    log_error "Could not find apt-get or yum. Cannot install dependencies on this OS."
-    exit 1
-  fi
+  # Amazon Linux 2023 ships curl via the curl-minimal package, so installing "curl" fails on a package conflict, and
+  # it names the AWS CLI package "awscli-2" rather than "aws".
+  sudo dnf update -y
+  sudo dnf install -y awscli-2 unzip jq
 }
 
 function user_exists {
@@ -330,6 +317,7 @@ function install {
 
   log_info "Starting Consul install"
 
+  assert_amazon_linux_2023
   install_dependencies
   create_consul_user "$user"
   create_consul_install_paths "$path" "$user"

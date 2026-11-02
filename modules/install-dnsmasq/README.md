@@ -5,15 +5,10 @@ it to forward requests for a specific domain to Consul. This way, you can easily
 domain names such as `foo.service.consul`, where `foo` is a service registered with Consul (see the [Registering 
 Services docs](https://www.consul.io/intro/getting-started/services.html) for instructions on registering your services
 with Consul). All other domain names will continue to be resolved via the default resolver on your OS. See the [Consul 
-DNS Forwarding Guide](https://www.consul.io/docs/guides/forwarding.html) for more info, including trade-offs between using this module and [systemd-resolved](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/setup-systemd-resolved) for DNS forwarding.
+DNS Forwarding Guide](https://www.consul.io/docs/guides/forwarding.html) for more info.
 
 
-This script has been tested on the following operating systems:
-
-* Ubuntu 16.04
-* Amazon Linux 2
-
-There is a good chance it will work on other flavors of Debian, CentOS, and RHEL as well.
+This script only supports Amazon Linux 2023.
 
 
 
