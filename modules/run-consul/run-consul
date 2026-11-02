@@ -10,6 +10,7 @@ readonly SYSTEMD_CONFIG_PATH="/etc/systemd/system/consul.service"
 
 readonly EC2_INSTANCE_METADATA_URL="http://169.254.169.254/latest/meta-data"
 readonly EC2_INSTANCE_DYNAMIC_DATA_URL="http://169.254.169.254/latest/dynamic"
+readonly EC2_INSTANCE_METADATA_TOKEN_URL="http://169.254.169.254/latest/api/token"
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
@@ -110,14 +111,20 @@ function assert_not_empty {
   fi
 }
 
+# Fetch a session token for the Instance Metadata Service. IMDSv2 is required on instances launched from the Amazon
+# Linux 2023 AMI, and the token endpoint is available on every instance, including the ones that still allow IMDSv1.
+function lookup_instance_metadata_token {
+  curl --silent --show-error --location --request PUT "$EC2_INSTANCE_METADATA_TOKEN_URL" --header "X-aws-ec2-metadata-token-ttl-seconds: 60"
+}
+
 function lookup_path_in_instance_metadata {
   local -r path="$1"
-  curl --silent --show-error --location "$EC2_INSTANCE_METADATA_URL/$path/"
+  curl --silent --show-error --location --header "X-aws-ec2-metadata-token: $(lookup_instance_metadata_token)" "$EC2_INSTANCE_METADATA_URL/$path/"
 }
 
 function lookup_path_in_instance_dynamic_data {
   local -r path="$1"
-  curl --silent --show-error --location "$EC2_INSTANCE_DYNAMIC_DATA_URL/$path/"
+  curl --silent --show-error --location --header "X-aws-ec2-metadata-token: $(lookup_instance_metadata_token)" "$EC2_INSTANCE_DYNAMIC_DATA_URL/$path/"
 }
 
 function get_instance_ip_address {

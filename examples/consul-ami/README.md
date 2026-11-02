@@ -1,14 +1,9 @@
 # Consul AMI
 
 This folder shows an example of how to use the [install-consul](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/install-consul) and 
-either [install-dnsmasq](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/install-dnsmasq) for Ubuntu 16.04 and Amazon Linux 2 or [setup-systemd-resolved](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/setup-systemd-resolved) for Ubuntu 18.04 modules with [Packer](https://www.packer.io/) to create [Amazon Machine 
-Images (AMIs)](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) that have Consul and Dnsmasq installed on 
-top of:
- 
-1. Ubuntu 16.04
-1. Ubuntu 18.04
-1. Ubuntu 20.04
-1. Amazon Linux 2
+[install-dnsmasq](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/install-dnsmasq) modules with [Packer](https://www.packer.io/) to create an [Amazon Machine 
+Image (AMI)](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) that has Consul and Dnsmasq installed on 
+top of Amazon Linux 2023.
 
 These AMIs will have [Consul](https://www.consul.io/) installed and configured to automatically join a cluster during 
 boot-up. They also have [Dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) installed and configured to use 
@@ -17,7 +12,7 @@ services](https://www.consul.io/intro/getting-started/services.html) for instruc
 in Consul). To see how to deploy this AMI, check out the [consul-cluster example](https://github.com/hashicorp/terraform-aws-consul/tree/master/examples/root-example). 
 
 For more info on Consul installation and configuration, check out the 
-[install-consul](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/install-consul) and [install-dnsmasq](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/install-dnsmasq) for Ubuntu 16.04 and Amazon Linux 2 or [setup-systemd-resolved](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/setup-systemd-resolved) for Ubuntu 18.04 and Ubuntu 20.04 documentation.
+[install-consul](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/install-consul) and [install-dnsmasq](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/install-dnsmasq) documentation.
 
 ## Dependencies
 1.  AWSCLI must be installed on the base AMI in order for run-consul to run
@@ -64,16 +59,8 @@ provisioner. Instead of:
     "pause_before": "30s"
   },{
     "type": "shell",
-    "only": ["ubuntu16-ami", "amazon-linux-2-ami"],
     "inline": [
       "/tmp/terraform-aws-consul/modules/install-dnsmasq/install-dnsmasq"
-    ],
-    "pause_before": "30s"
-  },{
-    "type": "shell",
-    "only": ["ubuntu18-ami", "ubuntu20-ami"],
-    "inline": [
-      "/tmp/terraform-aws-consul/modules/setup-systemd-resolved/setup-systemd-resolved"
     ],
     "pause_before": "30s"
   }]
@@ -93,23 +80,15 @@ Your code should look more like this:
     "pause_before": "30s"
   },{
     "type": "shell",
-    "only": ["ubuntu16-ami", "amazon-linux-2-ami"],
     "inline": [
       "/tmp/terraform-aws-consul/modules/install-dnsmasq/install-dnsmasq"
-    ],
-    "pause_before": "30s"
-  },{
-    "type": "shell",
-    "only": ["ubuntu18-ami", "ubuntu20-ami"],
-    "inline": [
-      "/tmp/terraform-aws-consul/modules/setup-systemd-resolved/setup-systemd-resolved"
     ],
     "pause_before": "30s"
   }]
 }
 ```
 
-**NOTE:** Amazon Linux 2 users will need to install Git first.
+**NOTE:** Amazon Linux 2023 users will need to install Git first.
 
 You should replace `<MODULE_VERSION>` in the code above with the version of this module that you want to use (see
 the [Releases Page](https://github.com/hashicorp/terraform-aws-consul/releases) for all available versions). That's because for production usage, you should always

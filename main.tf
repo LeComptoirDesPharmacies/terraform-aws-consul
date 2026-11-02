@@ -18,24 +18,16 @@ terraform {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# AUTOMATICALLY LOOK UP THE LATEST PRE-BUILT AMI
-# This repo contains a CircleCI job that automatically builds and publishes the latest AMI by building the Packer
-# template at /examples/consul-ami upon every new release. The Terraform data source below automatically looks up the
-# latest AMI so that a simple "terraform apply" will just work without the user needing to manually build an AMI and
-# fill in the right value.
+# AUTOMATICALLY LOOK UP THE LATEST AMI BUILT FROM /examples/consul-ami
+# The data source below looks up the most recent AMI built from that Packer template in this AWS account, so that a
+# simple "terraform apply" works without having to fill in ami_id by hand.
 #
-# !! WARNING !! These exmaple AMIs are meant only convenience when initially testing this repo. Do NOT use these example
-# AMIs in a production setting because it is important that you consciously think through the configuration you want
-# in your own production AMI.
-#
-# NOTE: This Terraform data source must return at least one AMI result or the entire template will fail. See
-# /_ci/publish-amis-in-new-account.md for more information.
+# NOTE: This Terraform data source must return at least one AMI result or the entire template will fail, so build the
+# Packer template at least once in this account before running "terraform apply" without setting ami_id.
 # ---------------------------------------------------------------------------------------------------------------------
 data "aws_ami" "consul" {
   most_recent = true
-
-  # If we change the AWS Account in which test are run, update this value.
-  owners = ["562637147889"]
+  owners      = ["self"]
 
   filter {
     name   = "virtualization-type"
@@ -43,13 +35,8 @@ data "aws_ami" "consul" {
   }
 
   filter {
-    name   = "is-public"
-    values = ["true"]
-  }
-
-  filter {
     name   = "name"
-    values = ["consul-ubuntu-*"]
+    values = ["consul-amazon-linux-2023-*"]
   }
 }
 
@@ -79,7 +66,7 @@ module "consul_servers" {
   })
 
   vpc_id     = data.aws_vpc.default.id
-  subnet_ids = data.aws_subnet_ids.default.ids
+  subnet_ids = data.aws_subnets.default.ids
 
   # If set to true, this allows access to the consul HTTPS API
   enable_https_port = var.enable_https_port
@@ -128,7 +115,7 @@ module "consul_clients" {
   })
 
   vpc_id     = data.aws_vpc.default.id
-  subnet_ids = data.aws_subnet_ids.default.ids
+  subnet_ids = data.aws_subnets.default.ids
 
   # To make testing easier, we allow Consul and SSH requests from any IP address here but in a production
   # deployment, we strongly recommend you limit this to the IP address ranges of known, trusted servers inside your VPC.
@@ -149,8 +136,11 @@ data "aws_vpc" "default" {
   id      = var.vpc_id
 }
 
-data "aws_subnet_ids" "default" {
-  vpc_id = data.aws_vpc.default.id
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
 }
 
 data "aws_region" "current" {

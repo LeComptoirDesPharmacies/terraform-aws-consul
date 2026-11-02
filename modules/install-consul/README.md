@@ -5,14 +5,7 @@ This folder contains a script for installing Consul and its dependencies. Use th
 (AMI)](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) that can be deployed in 
 [AWS](https://aws.amazon.com/) across an Auto Scaling Group using the [consul-cluster module](https://github.com/hashicorp/terraform-aws-consul/tree/master/modules/consul-cluster).
 
-This script has been tested on the following operating systems:
-
-* Ubuntu 16.04
-* Ubuntu 18.04
-* Ubuntu 20.04
-* Amazon Linux 2
-
-There is a good chance it will work on other flavors of Debian, CentOS, and RHEL as well.
+This script only supports Amazon Linux 2023.
 
 
 
