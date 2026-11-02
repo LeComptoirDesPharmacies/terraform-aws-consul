@@ -36,11 +36,11 @@ const AWS_DEFAULT_REGION_ENV_VAR = "AWS_DEFAULT_REGION"
 
 // Test the consul-cluster example by:
 //
-// 1. Copying the code in this repo to a temp folder so tests on the Terraform code can run in parallel without the
-//    state files overwriting each other.
-// 2. Building the AMI in the consul-ami example with the given build name
-// 3. Deploying that AMI using the consul-cluster Terraform code
-// 4. Checking that the Consul cluster comes up within a reasonable time period and can respond to requests
+//  1. Copying the code in this repo to a temp folder so tests on the Terraform code can run in parallel without the
+//     state files overwriting each other.
+//  2. Building the AMI in the consul-ami example with the given build name
+//  3. Deploying that AMI using the consul-cluster Terraform code
+//  4. Checking that the Consul cluster comes up within a reasonable time period and can respond to requests
 func runConsulClusterTest(t *testing.T, packerBuildName string, examplesFolder string, packerTemplatePath string, sshUser string, enterpriseUrl string) {
 	runConsulClusterTestWithVars(t,
 		packerBuildName,

@@ -11,7 +11,7 @@ func TestConsulInstallFromURLWithAmazonLinuxAmi(t *testing.T) {
 	runConsulClusterTest(t, "amazon-linux-2023-ami", ".", "../examples/consul-ami/consul.json", "ec2-user", getUrlFromEnv(t))
 }
 
-// To test this on circle ci you need a url set as an environment variable, CONSUL_AMI_TEMPLATE_VAR_DOWNLOAD_URL
+// This test needs a url set as an environment variable, CONSUL_AMI_TEMPLATE_VAR_DOWNLOAD_URL
 // which you would also have to set locally if you want to run this test locally.
 func getUrlFromEnv(t *testing.T) string {
 	url := os.Getenv("CONSUL_AMI_TEMPLATE_VAR_DOWNLOAD_URL")
